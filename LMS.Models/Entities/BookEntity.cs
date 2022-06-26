@@ -1,4 +1,4 @@
-﻿namespace Testing.LMS.Models
+﻿namespace LMS.Models.Entities
 {
     public class BookEntity
     {

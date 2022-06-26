@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LMS.BL.DI\LMS.BL.csproj" />
     <ProjectReference Include="..\LMS.DAL.EF\LMS.DAL.EF.csproj" />
+    <ProjectReference Include="..\LMS.Interface\LMS.Interface.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,12 +14,15 @@ namespace LMS.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
-    {
+    
 
-        public void cont()
+    public class UsersController : ControllerBase
+    {
+        IUserManager _userManager;
+        public UsersController(IUserManager userManager)
         {
-            
-        }
+            _userManager = userManager;
+        }   
     }
+
 }

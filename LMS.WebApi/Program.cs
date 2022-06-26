@@ -14,9 +14,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 
 builder.Services.AddDbContext<EFContext>(options =>
-    options.UseSqlServer(@"Data Source=AHMEDPC\MSSQLSERVER02;Initial Catalog=Testing;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"));
-builder.Services.AddTransient<IBookManager, Book>();
-builder.Services.AddTransient<IUserManager, User>();
+    options.UseSqlServer(@"Data Source=.;Initial Catalog=master;Integrated Security=True"));
+builder.Services.AddTransient<IBookManager, BookSqlManager>();
+builder.Services.AddTransient<IUserManager, UserSqlManager>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
