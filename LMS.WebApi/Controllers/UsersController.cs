@@ -1,28 +1,95 @@
-﻿using LMS.BL.DI;
-using LMS.Interface;
+﻿using LMS.Interface;
+using LMS.Models.Dto;
+using LMS.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Testing.LMS.DAL.EF;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace LMS.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     
 
     public class UsersController : ControllerBase
     {
-        IUserManager _userManager;
-        public UsersController(IUserManager userManager)
+        ILogger<BooksController> _logger;
+        IUserManager _userService;
+        public UsersController(IUserManager userService, ILogger<BooksController> logger)
         {
-            _userManager = userManager;
-        }   
+            _userService = userService;
+            _logger = logger;
+        }
+
+
+        [HttpPost]
+        public IActionResult AddUser(CreateUserRequest user)
+        {
+            try
+            {
+                _userService.Create(user);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+                return BadRequest();
+            }
+
+        }
+
+        [HttpPut]
+        public IActionResult UpdateUser(int id, User user)
+        {
+            try
+            {
+                _userService.Update(id, user);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+                return BadRequest();
+            }
+
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteUser(int id)
+        {
+            try
+            {
+                _userService.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+                return BadRequest();
+            }
+
+        }
+
+
+        [HttpGet]
+        public IActionResult GetUser(int id)
+        {
+            try
+            {
+                User user = _userService.GetUser(id);
+                if(user == null) { return NotFound(); }
+                return Ok(user);
+                //try null for bookentity
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+                return BadRequest();
+            }
+
+        }
+
     }
 
 }

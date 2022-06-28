@@ -3,55 +3,57 @@ using LMS.Models.Dto;
 using LMS.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 
 namespace LMS.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class BooksController : ControllerBase
     {
+        ILogger<BooksController> _logger;
+
         IBookManager _bookService;
-        public BooksController(IBookManager bookService)
+        public BooksController(IBookManager bookService, ILogger<BooksController> logger)
         {
             _bookService = bookService;
+            _logger = logger;
         }
 
-
         [HttpPost]
-        [Route("[action]")]
-        public IActionResult AddBook(BookEntity book)
+        public IActionResult AddBook(CreateBookRequest book)
         {
             try
             {
                 _bookService.Create(book);
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogInformation(ex.ToString());
                 return BadRequest();
             }
 
         }
 
         [HttpPut]
-        [Route("[action]")]
         public IActionResult UpdateBook(int id,Book book)
         {
             try
             {
                 _bookService.Update(id,book);
-
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogInformation(ex.ToString());
                 return BadRequest();
             }
 
         }
 
         [HttpDelete]
-        [Route("[action]")]
         public IActionResult DeleteBook(int id)
         {
             try
@@ -59,8 +61,9 @@ namespace LMS.WebApi.Controllers
                 _bookService.Delete(id);
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogInformation(ex.ToString());
                 return BadRequest();
             }
 
@@ -68,39 +71,37 @@ namespace LMS.WebApi.Controllers
 
 
         [HttpGet]
-        [Route("[action]/id")]
         public IActionResult GetBook(int id)
         {
             try
             {
-                _bookService.GetBook(id);
-                return Ok();
-
+                Book book = _bookService.GetBook(id);
+                if (book == null) { return NotFound(); }
+                return Ok(book);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogInformation(ex.ToString());
                 return BadRequest();
             }
 
         }
 
             [HttpPut]
-            [Route("[action]")]
             public IActionResult ChangeCopies(int id, string opp)
             {
                try
                 {
                     _bookService.CopiesChange(id, opp);
-                                    return Ok();
+                    return Ok();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                   return BadRequest();
+                _logger.LogInformation(ex.ToString());
+                return BadRequest();
                }
 
             }
-
-
-        
+                      
     }
 }

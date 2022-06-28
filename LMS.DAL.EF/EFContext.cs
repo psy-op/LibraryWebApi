@@ -11,7 +11,7 @@ namespace Testing.LMS.DAL.EF
         public EFContext(DbContextOptions<EFContext> options) : base(options) { }
 
         public DbSet<BookEntity> Book { get; set; }
-        public DbSet<User> User { get; set; }
+        public DbSet<UserEntity> User { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

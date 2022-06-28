@@ -1,6 +1,7 @@
 ﻿using LMS.Interface;
+using LMS.Mapping;
 using LMS.Models.Dto;
-using LMS.Models.Entities;
+using Microsoft.Extensions.Logging;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -13,83 +14,101 @@ namespace LMS.BL.DI
 {
     public class BookSqlManager : IBookManager
     {
+       // ClassMapper _mapper;
+        ClassMapper _mapper = new ClassMapper();
+        ILogger<BookSqlManager> _logger;
         private EFContext dbContext;
-        public BookSqlManager(EFContext context)
+        public BookSqlManager(EFContext context, ILogger<BookSqlManager> logger/*, ClassMapper mapper*/)
         {
            this.dbContext = context;
+            _logger = logger;
+            //_mapper = mapper;  
         }
 
-        public void Create(BookEntity book)
+        public void Create(CreateBookRequest book)
         {
-            dbContext.Add(book);
-            dbContext.SaveChanges();
+            try
+            {
+                dbContext.Book.Add(_mapper.Map(book));
+                dbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+            }
         }
 
         public void Update(int id,Book book)
         {
-            var query = from b in dbContext.Book
-                        select b;
-
-            foreach (var item in query)
+            try
             {
-                if (item.ID == id)
-                {
-                    item.Title = book.Title; 
-                    item.Author = book.Author;
-                    item.Copies = book.Copies;
-                    dbContext.Update(item);              
-                };
+                var bookentity = dbContext.Book.FirstOrDefault(book => book.ID == id);
+                if (bookentity == null ) { return; }
+                else 
+                { 
+                    bookentity.Author= book.Author;
+                    bookentity.Title= book.Title;
+                    bookentity.Copies = book.Copies;
+
+                    dbContext.Book.Update(bookentity); 
+                }
+                dbContext.SaveChanges();
             }
-            dbContext.SaveChanges();      
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+            }
         }
 
         public void Delete(int id)
         {
-            var query = from b in dbContext.Book
-                        select b;
-
-            foreach (var item in query)
+            try
             {
-                if (item.ID == id) { dbContext.Remove(item); }
+                var bookentity = dbContext.Book.FirstOrDefault(book => book.ID == id);
+                if (bookentity == null) { return; }
+                else { dbContext.Book.Remove(bookentity); }
+                dbContext.SaveChanges();
             }
-            dbContext.SaveChanges();
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+            }
         }
 
-        public object GetBook(int id)
+        public Book GetBook(int id)
         {
-            var query = from b in dbContext.Book
-                        select b;
+            try
+            {
+                var bookentity = dbContext.Book.FirstOrDefault(book => book.ID == id);
+                if (bookentity == null) { return null; }
+                else { return _mapper.Map(bookentity); }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+                return null;
+                
+            }
 
-                foreach (var item in query)
-                {
-                    if (item.ID == id){return item;}
-                    else { return null; }
-                }
-            return null;
-            
         }
 
+        
         public void CopiesChange(int id, string opp)
         {
-            var query = from b in dbContext.Book                           
-                select b ;
-
-            foreach (var item in query)
-            {
-                if (item.ID == id)
-                {
-                    if (opp == "+") { item.Copies++; }
-                    else if (opp == "-") { item.Copies--; }
-                    else { break; }
-                    dbContext.Update(item);
-                    
-                    
-                };
-
+            try
+            {               
+                var bookentity = dbContext.Book.FirstOrDefault(book => book.ID == id);
+                if (bookentity == null) { return ; }
+                else if (opp == "-") { bookentity.Copies--; }
+                else if (opp == "+") { bookentity.Copies++; }
+                else { return ; }
+                dbContext.SaveChanges();
             }
-            dbContext.SaveChanges();
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex.ToString());
+            }
         }
-
 
     }
 }

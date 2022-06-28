@@ -1,6 +1,7 @@
 using LMS.BL.DI;
 using LMS.Interface;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 using Testing.LMS.DAL.EF;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,12 @@ builder.Services.AddTransient<IUserManager, UserSqlManager>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var logger = new LoggerConfiguration()
+  .ReadFrom.Configuration(builder.Configuration)
+  .Enrich.FromLogContext()
+  .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 var app = builder.Build();
 

@@ -10,14 +10,11 @@ namespace LMS.Interface
 {
     public interface IBookManager
     {
-        //crud operations
-        // bookdto create(bookdto)
-        //delete book (dont show user if copies 0)
-        //update book
-        public void Create(BookEntity book);
+       
+        public void Create(CreateBookRequest book);
         public void Update(int id, Book book);
         public void Delete(int id);
-        public object GetBook(int id);
+        public Book GetBook(int id);
         public void CopiesChange(int id,string opp);
 
     }

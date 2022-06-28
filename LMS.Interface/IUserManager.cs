@@ -1,4 +1,5 @@
 ﻿using LMS.Models.Dto;
+using LMS.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,10 @@ namespace LMS.Interface
 {
     public interface IUserManager
     {
-        //crud operations
-        public User create(User user, int days);
-        public User update(int id, User user);
-        public void remove(int id, User user);
-        public object GetUser(int id);
+        public void Create(CreateUserRequest user);
+        public void Update(int id, User user);
+        public void Delete(int id);
+        public User GetUser(int id);
 
     }
 }
